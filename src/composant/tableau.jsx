@@ -1,15 +1,34 @@
-import React, { useEffect  } from 'react';
+import React, { useEffect } from 'react';
 import { stageStore } from '../store/store';
 
 const StageList = () => {
-  const stages = stageStore((state) => state.stages);
-  const fetchStages = stageStore((state) => state.fetchStages);
+  const { stages, fetchStages } = stageStore();
 
   useEffect(() => {
     fetchStages();
   }, [fetchStages]);
 
-  console.log("store : ",stages);
+  console.log("store : ", stages);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Date invalide';
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date) ? date.toLocaleDateString() : 'Date invalide';
+  };
+
+  const getStatusStyle = (tagName) => {
+    switch (tagName) {
+      case 'En attente':
+        return 'bg-yellow-500 text-yellow-900';
+      case 'Rejeté':
+        return 'bg-red-500 text-red-900';
+      default:
+        return 'bg-green-500 text-green-900';
+    }
+  };
+
+  // Vérifiez si stages.data existe et est un tableau
+  const stagesData = stages?.data && Array.isArray(stages.data) ? stages.data : [];
 
   return (
     <div className="overflow-x-auto">
@@ -23,27 +42,22 @@ const StageList = () => {
           </tr>
         </thead>
         <tbody>
-          {stages.length > 0 ? (
-            stages.map((stages) => (
-              <tr key={stages.id} className="border-b border-gray-700 hover:bg-gray-700 transition duration-300">
-                <td className="py-3 px-4">{stages.company_name}</td>
-                <td className="py-3 px-4">{stages.position}</td>
+          {stagesData.length > 0 ? (
+            stagesData.map((stage) => (
+              <tr key={stage.id} className="border-b border-gray-700 hover:bg-gray-700 transition duration-300">
+                <td className="py-3 px-4">{stage.company_name}</td>
+                <td className="py-3 px-4">{stage.position}</td>
+                <td className="py-3 px-4">{formatDate(stage.application_date)}</td>
                 <td className="py-3 px-4">
-                  {stages.application_date ? new Date(stages.application_date).toLocaleDateString() : 'Date invalide'}
-                </td>
-                <td className="py-3 px-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold
-                    ${stages.tag_name === 'En attente' ? 'bg-yellow-500 text-yellow-900' :
-                      stages.tag_name === 'Rejeté' ? 'bg-red-500 text-red-900' :
-                      'bg-green-500 text-green-900'}`}>
-                    {stages.tag_name}
+                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyle(stage.tag_name)}`}>
+                    {stage.tag_name}
                   </span>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="py-3 px-4 text-center">Aucun stage trouvé</td>
+              <td colSpan={4} className="py-3 px-4 text-center">Aucun stage trouvé</td>
             </tr>
           )}
         </tbody>
