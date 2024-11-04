@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import Tableau from '../composant/tableau.jsx'
 
 export default function Home() {
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 text-white">
         <Header />
