@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.pute{
+    position: absolute;
+    bottom: 2px;
+}

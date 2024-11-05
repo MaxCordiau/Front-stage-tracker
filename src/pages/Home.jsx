@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import Header from '../composant/header'
-import Card from '../composant/card'
-import Tableau from '../composant/tableau'
-import StageModal from '../composant/stage_modal'
-import Filtre from '../composant/Filtre'
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Header from '../composant/header';
+import Card from '../composant/card';
+import Tableau from '../composant/tableau';
+import StageModal from '../composant/stage_modal';
+import Filtre from '../composant/Filtre';
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -30,13 +34,23 @@ export default function Home() {
                             </button>
                         </div>
                     </div>
-                        <Filtre />
+                    <Filtre 
+                        setSelectedStatus={setSelectedStatus}
+                        setSelectedLocation={setSelectedLocation}
+                        setDateFrom={setDateFrom}
+                        setDateTo={setDateTo}
+                    />
                     <div className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl p-6">
-                        <Tableau />
+                        <Tableau 
+                            selectedStatus={selectedStatus}
+                            selectedLocation={selectedLocation}
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                        />
                     </div>
                 </section>
             </main>
             <StageModal isOpen={isModalOpen} onClose={closeModal} />
         </div>
-    )
+    );
 }

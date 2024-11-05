@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { stageStore } from '../store/store';
 import StageModal from './stage_modal';
 
-const StageList = ({ selectedStatus, location, dateFrom, dateTo }) => {
+const Tableau = ({ selectedStatus, selectedLocation, dateFrom, dateTo }) => {
   const { stages, fetchStages } = stageStore();
   const [selectedStage, setSelectedStage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,9 +40,10 @@ const StageList = ({ selectedStatus, location, dateFrom, dateTo }) => {
 
   const stagesData = stages?.data && Array.isArray(stages.data) ? stages.data : [];
 
+  // Appliquer les filtres
   const filteredStages = stagesData.filter((stage) => {
     const matchesStatus = selectedStatus ? stage.tag_name === selectedStatus : true;
-    const matchesLocation = location ? stage.location_name === location : true;
+    const matchesLocation = selectedLocation ? stage.location_name === selectedLocation : true;
     const matchesDateFrom = dateFrom ? new Date(stage.application_date) >= new Date(dateFrom) : true;
     const matchesDateTo = dateTo ? new Date(stage.application_date) <= new Date(dateTo) : true;
     return matchesStatus && matchesLocation && matchesDateFrom && matchesDateTo;
@@ -89,4 +90,4 @@ const StageList = ({ selectedStatus, location, dateFrom, dateTo }) => {
   );
 };
 
-export default StageList;
+export default Tableau;

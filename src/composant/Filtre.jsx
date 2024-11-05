@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { apiService } from '../ApiService'; 
 
-export default function Filtre() {
+export default function Filtre({ setSelectedStatus, setSelectedLocation, setDateFrom, setDateTo }) {
     const [statuses, setStatuses] = useState([]);
-    const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedStatus, setSelectedStatusLocal] = useState('');
     const [locations] = useState(['Sur Place', 'A Distance', 'Teletravail']); 
-    const [selectedLocation, setSelectedLocation] = useState('');
-    const [dateFrom, setDateFrom] = useState('');
-    const [dateTo, setDateTo] = useState('');
-    const [filteredStages, setFilteredStages] = useState([]); 
+    const [selectedLocation, setSelectedLocationLocal] = useState('');
+    const [dateFrom, setDateFromLocal] = useState('');
+    const [dateTo, setDateToLocal] = useState('');
 
     const fetchStages = async () => {
         try {
@@ -20,7 +19,6 @@ export default function Filtre() {
             });
     
             if (data && Array.isArray(data)) {
-                setFilteredStages(data); 
                 setStatuses([...new Set(data.map(stage => stage.tag_name))]); 
             } else {
                 console.warn('Aucun stage trouvé dans la réponse:', data);
@@ -29,16 +27,34 @@ export default function Filtre() {
             console.error('Erreur lors du chargement des stages:', error);
         }
     };
-    
-    
+
     useEffect(() => {
         fetchStages();
     }, [selectedLocation, selectedStatus, dateFrom, dateTo]); 
 
-    const handleStatusChange = (e) => setSelectedStatus(e.target.value);
-    const handleLocationChange = (e) => setSelectedLocation(e.target.value);
-    const handleDateFromChange = (e) => setDateFrom(e.target.value);
-    const handleDateToChange = (e) => setDateTo(e.target.value);
+    const handleStatusChange = (e) => {
+        const value = e.target.value;
+        setSelectedStatus(value); 
+        setSelectedStatusLocal(value); 
+    };
+
+    const handleLocationChange = (e) => {
+        const value = e.target.value;
+        setSelectedLocation(value); 
+        setSelectedLocationLocal(value); 
+    };
+
+    const handleDateFromChange = (e) => {
+        const value = e.target.value;
+        setDateFrom(value); 
+        setDateFromLocal(value); 
+    };
+
+    const handleDateToChange = (e) => {
+        const value = e.target.value;
+        setDateTo(value);
+        setDateToLocal(value); 
+    };
 
     return (
         <div className="mb-5 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-md">
@@ -46,7 +62,9 @@ export default function Filtre() {
                 <div>
                     <label className="block text-sm font-medium text-gray-200">Status</label>
                     <select 
-                        value={selectedStatus} 
+                        value={
+                            setSelectedStatus(selectedStatus)
+                            } 
                         onChange={handleStatusChange} 
                         className="w-full mt-1 p-2 bg-gray-700 border border-gray-600 text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
