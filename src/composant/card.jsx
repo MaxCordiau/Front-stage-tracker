@@ -22,17 +22,19 @@ export default function Card() {
   }, [fetchStages]);
 
   const stats = useMemo(() => {
+    // Assurez-vous que les stages sont bien sous forme de tableau
     const stagesArray = Array.isArray(stages) ? stages : stages?.data || [];
     const stageCounts = {};
 
-    // Initialize counts for each stage type
+    // Initialisez les comptes pour chaque type de stage
     Object.keys(statusConfig).forEach((status) => {
       stageCounts[status] = 0;
     });
 
-    // Count each stage
+    // Comptez chaque stage
     stagesArray.forEach((stage) => {
-      if (stageCounts[stage.tag_name] !== undefined) {
+      // Assurez-vous que stage.tag_name existe et est correct
+      if (statusConfig[stage.tag_name]) {
         stageCounts[stage.tag_name]++;
       }
     });
