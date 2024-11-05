@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { stageStore } from '../store/store';
+import StageModal from './stage_modal';
 
 const StageList = () => {
   const { stages, fetchStages } = stageStore();
+  const [selectedStage, setSelectedStage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchStages();
   }, [fetchStages]);
-
-  console.log("store : ", stages);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Date invalide';
@@ -27,7 +28,16 @@ const StageList = () => {
     }
   };
 
-  // Vérifiez si stages.data existe et est un tableau
+  const handleStageClick = (stage) => {
+    setSelectedStage(stage);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedStage(null);
+  };
+
   const stagesData = stages?.data && Array.isArray(stages.data) ? stages.data : [];
 
   return (
@@ -44,7 +54,11 @@ const StageList = () => {
         <tbody>
           {stagesData.length > 0 ? (
             stagesData.map((stage) => (
-              <tr key={stage.id} className="border-b border-gray-700 hover:bg-gray-700 transition duration-300">
+              <tr 
+                key={stage.id} 
+                className="border-b border-gray-700 hover:bg-gray-700 transition duration-300 cursor-pointer"
+                onClick={() => handleStageClick(stage)}
+              >
                 <td className="py-3 px-4">{stage.company_name}</td>
                 <td className="py-3 px-4">{stage.position}</td>
                 <td className="py-3 px-4">{formatDate(stage.application_date)}</td>
@@ -62,6 +76,7 @@ const StageList = () => {
           )}
         </tbody>
       </table>
+      <StageModal isOpen={isModalOpen} onClose={closeModal} stage={selectedStage} />
     </div>
   );
 };

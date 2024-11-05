@@ -1,12 +1,9 @@
 export const apiService = {
     async create(data) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/add/`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}stages/add/`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                body: data,
             });
 
             if (!response.ok) {
@@ -23,7 +20,7 @@ export const apiService = {
 
     async getAll() {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}stages/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +33,7 @@ export const apiService = {
             }
 
             const data = await response.json();
-            console.log("Données récupérées:", data);
+            // console.log("Données récupérées:", data);
             return data;
         } catch (error) {
             console.error("Erreur dans apiService.getAll:", error);
@@ -46,7 +43,7 @@ export const apiService = {
 
     async get(id) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}stages/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,12 +64,9 @@ export const apiService = {
 
     async update(id, data) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/update/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}stages/update/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                body: data,
             });
 
             if (!response.ok) {
@@ -87,9 +81,10 @@ export const apiService = {
         }
     },
 
+
     async delete(id) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/delete/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}stages/delete/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +105,7 @@ export const apiService = {
 
     async addInteract(id, data) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/update/addInteract/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}stages/update/addInteract/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,6 +121,26 @@ export const apiService = {
             return await response.json();
         } catch (error) {
             console.error("Erreur dans apiService.addInteract:", error);
+            throw error;
+        }
+    },
+
+    async uploads(data) {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}files`, {
+                method: 'POST',
+                body: data, // `data` doit être une instance de `FormData`
+                // Pas besoin de spécifier 'Content-Type', `fetch` le gère automatiquement pour `FormData`
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Erreur lors de l'upload du fichier");
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Erreur dans apiService.uploads:", error);
             throw error;
         }
     },
