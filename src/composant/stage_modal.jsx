@@ -3,7 +3,7 @@ import { X, Upload } from 'lucide-react';
 import { apiService } from '../ApiService';
 import { stageStore } from '../store/store';
 
-export default function StageModal({ isOpen, onClose, stage = null }) {
+export default function StageModal({ isOpen, onClose, stage = "" }) {
     const [formData, setFormData] = useState({
         company_name: '',
         position: '',
@@ -21,11 +21,12 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
     const { fetchStages } = stageStore();
 
     useEffect(() => {
+        console.log('stage:', stage);
         if (stage) {
             const formatDate = (dateString) => {
                 if (!dateString) return '';
                 const date = new Date(dateString);
-                return date.toISOString().slice(0, 16);
+                return date.toISOString().slice(0, 10); // Format 'YYYY-MM-DD'
             };
 
             setFormData({
@@ -39,6 +40,20 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
                 type: stage.type || '',
                 note: stage.note || '',
             });
+        } else {
+            // Reset form if stage is null
+            setFormData({
+                company_name: '',
+                position: '',
+                application_date: '',
+                contract_duration: '',
+                desired_start_date: '',
+                location_name: 'Sur Place',
+                tag_name: 'A Envoyer',
+                type: '',
+                note: '',
+            });
+            setFile(null);
         }
     }, [stage]);
 
@@ -48,7 +63,9 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
     };
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        if (e.target.files.length > 0) {
+            setFile(e.target.files[0]);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -74,15 +91,15 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
             onClose();
         } catch (error) {
             console.error('Error submitting form:', error);
-            setError('Une erreur est survenue lors de la soumission.');
+            setError('Une erreur est survenue lors de la soumission. Veuillez réessayer.');
         }
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className=" fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="pute bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-lg overflow-y-auto max-h-[90vh]">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-lg overflow-y-auto max-h-[90vh]">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-semibold text-white">
                         {stage ? 'Modifier le stage' : 'Ajouter un stage'}
@@ -110,22 +127,30 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
                                 />
                             </div>
                         ))}
-                        {['application_date', 'desired_start_date'].map((field) => (
-                            <div key={field}>
-                                <label htmlFor={field} className="block text-sm font-medium text-gray-300 mb-1">
-                                    {field.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase())}
-                                </label>
-                                <input
-                                    type="datetime-local"
-                                    id={field}
-                                    name={field}
-                                    value={formData[field]}
-                                    onChange={handleChange}
-                                    className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                        ))}
+                        <div>
+                            <label htmlFor="application_date" className="block text-sm font-medium text-gray-300 mb-1">Date de candidature</label>
+                            <input
+                                type="date"
+                                id="application_date"
+                                name="application_date"
+                                value={formData.application_date}
+                                onChange={handleChange}
+                                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="desired_start_date" className="block text-sm font-medium text-gray-300 mb-1">Date de début souhaitée</label>
+                            <input
+                                type="date"
+                                id="desired_start_date"
+                                name="desired_start_date"
+                                value={formData.desired_start_date}
+                                onChange={handleChange}
+                                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
                         <div>
                             <label htmlFor="location_name" className="block text-sm font-medium text-gray-300 mb-1">Lieu</label>
                             <select
@@ -159,23 +184,22 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
                                 <option value="Refuser">Refuser</option>
                             </select>
                         </div>
-                        {stage && (
-                            <div>
-                                <label htmlFor="type" className="block text-sm font-medium text-gray-300 mb-1">Type</label>
-                                <select
-                                    id="type"
-                                    name="type"
-                                    value={formData.type}
-                                    onChange={handleChange}
-                                    className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Sélectionnez un type</option>
-                                    <option value="Email">Email</option>
-                                    <option value="Tel">Tel</option>
-                                    <option value="Interview">Interview</option>
-                                </select>
-                            </div>
-                        )}
+                        <div>
+                            <label htmlFor="type" className="block text-sm font-medium text-gray-300 mb-1">Type</label>
+                            <select
+                                id="type"
+                                name="type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            >
+                                <option value="">Sélectionnez un type</option>
+                                <option value="Email">Email</option>
+                                <option value="Tel">Tel</option>
+                                <option value="Interview">Interview</option>
+                            </select>
+                        </div>
                     </div>
                     {stage && (
                         <div>
@@ -186,30 +210,30 @@ export default function StageModal({ isOpen, onClose, stage = null }) {
                                 value={formData.note}
                                 onChange={handleChange}
                                 className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                rows="3"
-                            ></textarea>
+                            />
                         </div>
                     )}
                     <div>
-                        <label htmlFor="upload" className="block text-sm font-medium text-gray-300 mb-1">Upload de fichier</label>
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="file"
-                                id="upload"
-                                name="upload"
-                                onChange={handleFileChange}
-                                className="hidden"
-                                accept=".pdf,.doc,.docx,.jpg,.png"
-                            />
-                            <label htmlFor="upload" className="cursor-pointer text-blue-400 hover:underline flex items-center">
-                                <Upload size={16} className="mr-2" /> Choisir un fichier
-                            </label>
-                            {file && <span className="text-sm text-white">{file.name}</span>}
-                        </div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">Ajouter un fichier</label>
+                        <input
+                            type="file"
+                            onChange={handleFileChange}
+                            className="bg-gray-700 text-white border border-gray-600 rounded-md py-2 px-3"
+                        />
                     </div>
-                    <div className="flex justify-end mt-6">
-                        <button type="submit" className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition">
-                            {stage ? 'Enregistrer les modifications' : 'Ajouter le stage'}
+                    <div className="flex justify-end mt-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="bg-gray-600 text-white rounded-md py-2 px-4 mr-2 hover:bg-gray-500"
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            type="submit"
+                            className="bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-500"
+                        >
+                            {stage ? 'Modifier' : 'Ajouter'}
                         </button>
                     </div>
                 </form>

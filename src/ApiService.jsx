@@ -174,23 +174,27 @@ export const apiService = {
         }
     },
 
-    async uploads(data) {
+    async uploads(file) {
         try {
+            const formData = new FormData();
+            formData.append('file', file); 
+    
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}files`, {
                 method: 'POST',
-                body: data, 
+                body: formData,
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Erreur lors de l'upload du fichier");
             }
-
+    
             return await response.json();
         } catch (error) {
             console.error("Erreur dans apiService.uploads:", error);
             throw error;
         }
-    },
+    }
+    
 };
 

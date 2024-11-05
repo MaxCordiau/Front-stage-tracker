@@ -62,9 +62,7 @@ export default function Filtre({ setSelectedStatus, setSelectedLocation, setDate
                 <div>
                     <label className="block text-sm font-medium text-gray-200">Status</label>
                     <select 
-                        value={
-                            setSelectedStatus(selectedStatus)
-                            } 
+                        value={selectedStatus}  // Correction ici
                         onChange={handleStatusChange} 
                         className="w-full mt-1 p-2 bg-gray-700 border border-gray-600 text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
